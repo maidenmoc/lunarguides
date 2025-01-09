@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunar Coworker Guide</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        function App() {
+            const [selectedMonth, setSelectedMonth] = React.useState('');
+            const [selectedDay, setSelectedDay] = React.useState('');
+            const [coworkerName, setCoworkerName] = React.useState('');
+            const [result, setResult] = React.useState(null);
+            const [showForm, setShowForm] = React.useState(true);
+
+            const calculateMoonPhase = (month, day) => {
+                const year = new Date().getFullYear();
+                const targetDate = new Date(year, month - 1, day);
+                const knownNewMoon = new Date('2024-01-11');
+                const daysSinceNewMoon = Math.floor((targetDate - knownNewMoon) / (1000 * 60 * 60 * 24));
+                const currentPhase = daysSinceNewMoon % 29.53059;
+                
+                if (currentPhase < 3.69) return "New Moon";
+                if (currentPhase < 7.38) return "Waxing Crescent";
+                if (currentPhase < 11.07) return "First Quarter";
+                if (currentPhase < 14.76) return "Waxing Gibbous";
+                if (currentPhase < 18.45) return "Full Moon";
+                if (currentPhase < 22.14) return "Waning Gibbous";
+                if (currentPhase < 25.83) return "Last Quarter";
+                return "Waning Crescent";
+            };
+
+            const handleClick = () => {
+                if (!selectedMonth || !selectedDay) {
+                    setResult("Please select your coworker's birth month and day");
+                    return;
+                }
+
+                const todayDate = new Date();
+                const todayPhase = calculateMoonPhase(todayDate.getMonth() + 1, todayDate.getDate());
+                const birthPhase = calculateMoonPhase(parseInt(selectedMonth), parseInt(selectedDay));
+                
+                const phaseInfo = {
+                    "New Moon": {
+                        mood: "introspective and thoughtful",
+                        energy: "internally focused and planning-oriented",
+                        approach: "Give them space for strategic thinking and planning",
+                        good: [
+                            "Share written communications rather than interrupting",
+                            "Schedule quiet planning sessions",
+                            "Ask for their insights on complex problems",
+                            "Allow time for independent work"
+                        ],
+                        avoid: [
+                            "Surprise meetings or impromptu discussions",
+                            "Pushing for immediate decisions",
+                            "Overwhelming with social interaction",
+                            "Expecting quick, spontaneous responses"
+                        ]
+                    },
+                    "Waxing Crescent": {
+                        mood: "energetic and enthusiastic",
+                        energy: "building momentum and ready for action",
+                        approach: "Engage them in new projects and fresh ideas",
+                        good: [
+                            "Present new opportunities",
+                            "Start exciting projects",
+                            "Schedule creative brainstorming",
+                            "Discuss growth and development"
+                        ],
+                        avoid: [
+                            "Focusing on past issues",
+                            "Getting bogged down in details",
+                            "Limiting their creative expression",
+                            "Sticking to rigid routines"
+                        ]
+                    },
+                    "First Quarter": {
+                        mood: "determined and action-oriented",
+                        energy: "ready to overcome challenges",
+                        approach: "Support their drive to make progress",
+                        good: [
+                            "Help remove obstacles",
+                            "Support decision-making",
+                            "Provide resources they need",
+                            "Join their momentum"
+                        ],
+                        avoid: [
+                            "Creating unnecessary barriers",
+                            "Dwelling on uncertainties",
+                            "Slowing their progress",
+                            "Overcomplicating simple matters"
+                        ]
+                    },
+                    "Waxing Gibbous": {
+                        mood: "focused and detail-oriented",
+                        energy: "refining and improving",
+                        approach: "Help them perfect and enhance their work",
+                        good: [
+                            "Review and refine projects",
+                            "Offer constructive feedback",
+                            "Help with improvements",
+                            "Support their attention to detail"
+                        ],
+                        avoid: [
+                            "Rushing through important details",
+                            "Dismissing their concerns",
+                            "Pushing for quick completion",
+                            "Interrupting focused work"
+                        ]
+                    },
+                    "Full Moon": {
+                        mood: "expressive and emotionally aware",
+                        energy: "highly social and collaborative",
+                        approach: "Engage in team activities and open discussion",
+                        good: [
+                            "Schedule team meetings",
+                            "Plan presentations",
+                            "Hold important discussions",
+                            "Celebrate achievements"
+                        ],
+                        avoid: [
+                            "Isolating them from the team",
+                            "Suppressing creative expression",
+                            "Expecting solitary focus",
+                            "Ignoring emotional aspects"
+                        ]
+                    },
+                    "Waning Gibbous": {
+                        mood: "analytical and communicative",
+                        energy: "sharing knowledge and experience",
+                        approach: "Seek their insights and feedback",
+                        good: [
+                            "Ask for their analysis",
+                            "Learn from their experience",
+                            "Share knowledge together",
+                            "Review completed work"
+                        ],
+                        avoid: [
+                            "Dismissing their wisdom",
+                            "Rushing through evaluation",
+                            "Skipping important reviews",
+                            "Ignoring their advice"
+                        ]
+                    },
+                    "Last Quarter": {
+                        mood: "reflective and releasing",
+                        energy: "letting go and reassessing",
+                        approach: "Help them complete and conclude matters",
+                        good: [
+                            "Finish ongoing projects",
+                            "Clear up old issues",
+                            "Release what isn't working",
+                            "Plan next steps"
+                        ],
+                        avoid: [
+                            "Starting major new initiatives",
+                            "Adding more responsibilities",
+                            "Creating new pressure",
+                            "Forcing new commitments"
+                        ]
+                    },
+                    "Waning Crescent": {
+                        mood: "quiet and contemplative",
+                        energy: "preparing for new beginnings",
+                        approach: "Respect their need for space and reflection",
+                        good: [
+                            "Allow time for rest",
+                            "Support quiet preparation",
+                            "Help tie up loose ends",
+                            "Keep interactions gentle"
+                        ],
+                        avoid: [
+                            "Pushing for high energy",
+                            "Making big demands",
+                            "Scheduling intense meetings",
+                            "Expecting immediate action"
+                        ]
+                    }
+                };
+
+                setResult({
+                    phase: todayPhase,
+                    details: phaseInfo[todayPhase],
+                    date: todayDate.toLocaleDateString(),
+                    birthPhase: birthPhase
+                });
+                setShowForm(false);
+            };
+
+            const handleReset = () => {
+                setResult(null);
+                setSelectedMonth('');
+                setSelectedDay('');
+                setCoworkerName('');
+                setShowForm(true);
+            };
+
+            return (
+                <div className="p-6 max-w-2xl mx-auto bg-white">
+                    <h1 className="text-2xl font-bold text-gray-800 mb-6">Lunar Coworker Guide</h1>
+                    
+                    {showForm ? (
+                        <div className="mb-6 space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Coworker's Name (Optional)
+                                </label>
+                                <input
+                                    type="text"
+                                    value={coworkerName}
+                                    onChange={(e) => setCoworkerName(e.target.value)}
+                                    placeholder="Enter their name"
+                                    className="w-full p-2 border rounded-md"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Coworker's Birthday
+                                </label>
+                                <div className="flex gap-2">
+                                    <select 
+                                        value={selectedMonth}
+                                        onChange={(e) => setSelectedMonth(e.target.value)}
+                                        className="w-1/2 p-2 border rounded-md"
+                                    >
+                                        <option value="">Month</option>
+                                        <option value="1">January</option>
+                                        <option value="2">February</option>
+                                        <option value="3">March</option>
+                                        <option value="4">April</option>
+                                        <option value="5">May</option>
+                                        <option value="6">June</option>
+                                        <option value="7">July</option>
+                                        <option value="8">August</option>
+                                        <option value="9">September</option>
+                                        <option value="10">October</option>
+                                        <option value="11">November</option>
+                                        <option value="12">December</option>
+                                    </select>
+                                    <select
+                                        value={selectedDay}
+                                        onChange={(e) => setSelectedDay(e.target.value)}
+                                        className="w-1/2 p-2 border rounded-md"
+                                    >
+                                        <option value="">Day</option>
+                                        {[...Array(31)].map((_, i) => (
+                                            <option key={i + 1} value={i + 1}>
+                                                {i + 1}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button 
+                                onClick={handleClick}
+                                className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700"
+                            >
+                                Get Today's Insights
+                            </button>
+                        </div>
+                    ) : null}
+
+                    {result && typeof result === 'string' ? (
+                        <div className="p-3 bg-red-50 text-red-600 rounded-md">
+                            {result}
+                        </div>
+                    ) : result && (
+                        <div className="space-y-6">
+                            <div className="text-sm text-gray-600">
+                                Updated for: {result.date}
+                            </div>
+
+                            <div className="p-4 bg-blue-50 rounded-md">
+                                <h2 className="text-xl font-semibold text-blue-800 mb-4">
+                                    {coworkerName ? `${coworkerName}'s` : "Their"} Lunar Energy: {result.phase}
+                                </h2>
+                                
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-gray-700">
+                                            Today they're likely feeling <strong>{result.details.mood}</strong> and their energy is <strong>{result.details.energy}</strong>.
+                                        </p>
+                                    </div>
+                                    
+                                    <div>
+                                        <p className="text-gray-700">
+                                            <strong>Best approach:</strong> {result.details.approach}
+                                        </p>
+                                    </div>
+                                    
+                                    <div className="text-sm text-gray-600">
+                                        Birth Moon Phase: {result.birthPhase}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-4 bg-green-50 rounded-md">
+                                <h3 className="font-medium text-gray-900 mb-3">Recommended Interactions</h3>
+                                <ul className="space-y-2">
+                                    {result.details.good.map((tip, index) => (
+                                        <li key={index} className="flex items-start gap-2">
+                                            <span className="text-green-500">✓</span>
+                                            <span className="text-gray-700">{tip}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="p-4 bg-red-50 rounded-md">
+                                <h3 className="font-medium text-gray-900 mb-3">What to Avoid</h3>
+                                <ul className="space-y-2">
+                                    {result.details.avoid.map((tip, index) => (
+                                        <li key={index} className="flex items-start gap-2">
+                                            <span className="text-red-500">•</span>
+                                            <span className="text-gray-700">{tip}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="p-4">
+                                <button 
+                                    onClick={handleReset}
+                                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 text-lg font-medium"
+                                >
+                                    ↺ Check Another Coworker
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
